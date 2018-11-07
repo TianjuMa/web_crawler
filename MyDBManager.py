@@ -1,7 +1,5 @@
 import pymongo
-import pprint
-from bson.code import Code
-# import bson
+from bson import code, objectid
 
 
 class MyDBManager:
@@ -21,48 +19,32 @@ class MyDBManager:
     def update(self):
         return
 
-    def query(self, command):
-        return self.mycol.find(command)
+    def fetch_movies(self, id=None):
+        if id is None:
+            return [a['title'] for a in self.mycol.find()]
 
-    def test(self):
-        # print(1)
-        mapper = Code("""
-                       function () {
-                         this.details.forEach(function(z) {
-                           emit(z, 1);
-                         });
-                       }
-                       """)
+        li = []
 
-        reducer = Code("""
-                        function (key, values) {
-                          var total = 0;
-                          for (var i = 0; i < values.length; i++) {
-                            total += values[i];
-                          }
-                          return total;
-                        }
-                        """)
+        command = {'_id': objectid.ObjectId(id)}
+        for item in self.mycol.find(command):
+            dic = {
+                'title': item['title'],
+                'img': item['img'],
+                'rate': item['rate'],
+                'comments': item['details']
+            }
 
-        pipeline = [{'$group': {'_id': '$title', 'count': {'$sum': 1}}}, {'$match': {'count': {"$gt": 1}}}]
+            li.append(dic)
 
-        dic = {}
-        # print(self.mycol.aggregate(pipeline))
-        self.mycol.find().forEach(Code('''
-                    function(u) { 
-                       u.forSong = self.request.db.song.find_one({}, {'_id': 1})
-                       self.request.db.save(u)
-                     }'''))
+        return li
 
-        # for a in self.mycol.aggregate(pipeline):
-        #     for i in self.mycol.find({'title': a['_id']}):
-        #         print(i['_id'])
+    def removeDups(self):
 
-        # print(dic)
+        pipeline = [{'$group': {'_id': '$title', 'dups': {'$push': "$_id"}, 'count': {'$sum': 1}}},
+                    {'$match': {'count': {"$gt": 1}}}]
 
-        # print(self.mycol.find().count())
-        # for a in self.mycol.find():
-        #     print(a)
-
-        # for a in self.mycol.map_reduce(mapper, reducer, "myresults"):
-        #     print(a)
+        for a in self.mycol.aggregate(pipeline):
+            l = a['dups']
+            for i in range(1, len(l)):
+                print(l[i])
+                self.mycol.delete_one({'_id': l[i]})
