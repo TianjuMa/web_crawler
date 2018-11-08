@@ -11,9 +11,10 @@ def index():
 
 
 @app.route('/hello/')
-@app.route('/hello/<name>')
+# @app.route('/hello/<name>')
 def hello(name=None):
-    return render_template('index.html', name=name)
+    # return render_template('index.html', name=name)
+    return render_template('index.html')
 
 
 @app.route('/login')
@@ -52,14 +53,6 @@ def fetch_movies(id=None):
     else:
         # print(id)
         return jsonify(dbManager.fetch_movies(id=id))
-
-
-# with app.test_request_context():
-#     print(url_for('index'))
-#     print(url_for('login'))
-#     print(url_for('login', next='/'))
-#     print(url_for('profile', username='John Doe'))http://localhost:5000/hello/whatsup
-
 
 if __name__ == '__main__':
     app.debug = True

@@ -1,7 +1,25 @@
 <!doctype html>
-<title>Hello from Flask</title>
-{% if name %}
-  <h1>Hello {{ name }}!</h1>
-{% else %}
-  <h1>Hello, World!</h1>
-{% endif %}
+<html>
+  <head>
+    <title>My First HTML page</title>
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/main.css') }}">
+  </head>
+
+  <body>
+    <!-- <header class="top-header">
+      <nav class="top-nav">
+          <a href="">Home</a>
+      </nav>
+      
+    </header> -->
+
+    <!-- <div class="top">
+        <a class="w3schools-logo notranslate" href="//www.w3schools.com">My First Web</a>
+        <div class="w3-right w3-hide-small w3-wide toptext" style="font-family:'Segoe UI',Arial,sans-serif">THE WORLD'S LARGEST WEB DEVELOPER SITE</div>
+    </div> -->
+
+    <div class="top-header">Home111</div>
+
+  </body>
+
+</html>
